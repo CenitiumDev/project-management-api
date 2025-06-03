@@ -1,4 +1,4 @@
-package co.cenitiumdev.projectmanagementapi.model;
+package co.cenitiumdev.projectmanagementapi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

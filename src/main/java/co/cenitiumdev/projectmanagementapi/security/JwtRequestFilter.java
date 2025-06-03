@@ -1,7 +1,7 @@
 package co.cenitiumdev.projectmanagementapi.security;
 
-import co.cenitiumdev.projectmanagementapi.service.CustomUserDetailsService;
-import co.cenitiumdev.projectmanagementapi.util.JwtUtil;
+import co.cenitiumdev.projectmanagementapi.services.CustomUserDetailsService;
+import co.cenitiumdev.projectmanagementapi.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

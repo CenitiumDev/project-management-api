@@ -1,7 +1,7 @@
-package co.cenitiumdev.projectmanagementapi.controller;
+package co.cenitiumdev.projectmanagementapi.controllers;
 
-import co.cenitiumdev.projectmanagementapi.model.Project;
-import co.cenitiumdev.projectmanagementapi.service.ProjectService;
+import co.cenitiumdev.projectmanagementapi.models.Project;
+import co.cenitiumdev.projectmanagementapi.services.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

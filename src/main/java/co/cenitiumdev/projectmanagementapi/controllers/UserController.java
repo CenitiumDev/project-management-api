@@ -1,11 +1,11 @@
-package co.cenitiumdev.projectmanagementapi.controller;
+package co.cenitiumdev.projectmanagementapi.controllers;
 
-import co.cenitiumdev.projectmanagementapi.dto.LoginRequestDTO;
-import co.cenitiumdev.projectmanagementapi.dto.UserRegistrationDTO;
-import co.cenitiumdev.projectmanagementapi.model.User;
-import co.cenitiumdev.projectmanagementapi.service.CustomUserDetailsService;
-import co.cenitiumdev.projectmanagementapi.service.UserService;
-import co.cenitiumdev.projectmanagementapi.util.JwtUtil;
+import co.cenitiumdev.projectmanagementapi.dtos.LoginRequestDTO;
+import co.cenitiumdev.projectmanagementapi.dtos.UserRegistrationDTO;
+import co.cenitiumdev.projectmanagementapi.models.User;
+import co.cenitiumdev.projectmanagementapi.services.CustomUserDetailsService;
+import co.cenitiumdev.projectmanagementapi.services.UserService;
+import co.cenitiumdev.projectmanagementapi.utils.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

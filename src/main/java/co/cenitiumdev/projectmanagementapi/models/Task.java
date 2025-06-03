@@ -1,18 +1,19 @@
-package co.cenitiumdev.projectmanagementapi.model;
+package co.cenitiumdev.projectmanagementapi.models;
 
+import co.cenitiumdev.projectmanagementapi.models.enums.TaskStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "tasks")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Project {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +25,14 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private LocalDate startDate;
+    private LocalDate dueDate;
 
-    private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
 }

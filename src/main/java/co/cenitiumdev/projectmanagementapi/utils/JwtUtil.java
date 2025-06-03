@@ -1,4 +1,4 @@
-package co.cenitiumdev.projectmanagementapi.util;
+package co.cenitiumdev.projectmanagementapi.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

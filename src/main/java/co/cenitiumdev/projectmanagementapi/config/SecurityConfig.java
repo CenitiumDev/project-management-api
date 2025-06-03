@@ -1,7 +1,7 @@
 package co.cenitiumdev.projectmanagementapi.config;
 
 import co.cenitiumdev.projectmanagementapi.security.JwtRequestFilter;
-import co.cenitiumdev.projectmanagementapi.service.CustomUserDetailsService;
+import co.cenitiumdev.projectmanagementapi.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

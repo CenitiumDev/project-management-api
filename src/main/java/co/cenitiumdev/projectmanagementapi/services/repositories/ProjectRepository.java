@@ -1,7 +1,7 @@
-package co.cenitiumdev.projectmanagementapi.repository;
+package co.cenitiumdev.projectmanagementapi.services.repositories;
 
-import co.cenitiumdev.projectmanagementapi.model.Project;
-import co.cenitiumdev.projectmanagementapi.model.User;
+import co.cenitiumdev.projectmanagementapi.models.Project;
+import co.cenitiumdev.projectmanagementapi.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

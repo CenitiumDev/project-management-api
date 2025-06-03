@@ -1,8 +1,8 @@
-package co.cenitiumdev.projectmanagementapi.service;
+package co.cenitiumdev.projectmanagementapi.services;
 
 
-import co.cenitiumdev.projectmanagementapi.model.User;
-import co.cenitiumdev.projectmanagementapi.repository.UserRepository;
+import co.cenitiumdev.projectmanagementapi.models.User;
+import co.cenitiumdev.projectmanagementapi.services.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
