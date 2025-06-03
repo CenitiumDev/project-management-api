@@ -1,5 +1,6 @@
 package co.cenitiumdev.projectmanagementapi.services;
 
+import co.cenitiumdev.projectmanagementapi.exceptions.ResourceNotFoundException;
 import co.cenitiumdev.projectmanagementapi.models.Project;
 import co.cenitiumdev.projectmanagementapi.models.Task;
 import co.cenitiumdev.projectmanagementapi.models.User;
@@ -33,7 +34,7 @@ public class TaskService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario propietario no encontrado: " + ownerUsername));
 
         Project project = projectRepository.findByIdAndOwner(projectId, owner)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario."));
 
         task.setProject(project);
         if (task.getStatus() == null) {
@@ -48,7 +49,7 @@ public class TaskService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario propietario no encontrado: " + ownerUsername));
 
         Project project = projectRepository.findByIdAndOwner(projectId, owner)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario."));
 
         return taskRepository.findByProject(project);
     }
@@ -59,7 +60,7 @@ public class TaskService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario propietario no encontrado: " + ownerUsername));
 
         Project project = projectRepository.findByIdAndOwner(projectId, owner)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario."));
 
         return taskRepository.findByIdAndProject(taskId, project);
     }
@@ -71,7 +72,7 @@ public class TaskService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario propietario no encontrado: " + ownerUsername));
 
         Project project = projectRepository.findByIdAndOwner(projectId, owner)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario."));
 
         return taskRepository.findByIdAndProject(taskId, project)
                 .map(existingTask -> {
@@ -83,7 +84,7 @@ public class TaskService {
                     }
                     return taskRepository.save(existingTask);
                 })
-                .orElseThrow(() -> new RuntimeException("Tarea no encontrada o no pertenece al proyecto/usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada o no pertenece al proyecto/usuario."));
     }
 
     @Transactional
@@ -92,12 +93,12 @@ public class TaskService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario propietario no encontrado: " + ownerUsername));
 
         Project project = projectRepository.findByIdAndOwner(projectId, owner)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario."));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario."));
 
         taskRepository.findByIdAndProject(taskId, project)
                 .ifPresentOrElse(
                         taskRepository::delete,
-                        () -> { throw new RuntimeException("Tarea no encontrada o no pertenece al proyecto/usuario."); }
+                        () -> { throw new ResourceNotFoundException("Tarea no encontrada o no pertenece al proyecto/usuario."); }
                 );
     }
 }

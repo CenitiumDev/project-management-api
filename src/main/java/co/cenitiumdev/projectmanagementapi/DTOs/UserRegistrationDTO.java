@@ -1,4 +1,4 @@
-package co.cenitiumdev.projectmanagementapi.dtos;
+package co.cenitiumdev.projectmanagementapi.DTOs;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,5 +19,4 @@ public class UserRegistrationDTO {
     @NotBlank(message = "El correo electrónico no puede estar vacío")
     @Email(message = "Debe ser un formato de correo electrónico válido")
     private String email;
-
 }

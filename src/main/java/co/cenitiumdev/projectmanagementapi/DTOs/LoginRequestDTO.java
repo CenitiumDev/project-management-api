@@ -1,4 +1,4 @@
-package co.cenitiumdev.projectmanagementapi.dtos;
+package co.cenitiumdev.projectmanagementapi.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

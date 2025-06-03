@@ -1,5 +1,6 @@
 package co.cenitiumdev.projectmanagementapi.services;
 
+import co.cenitiumdev.projectmanagementapi.exceptions.ResourceNotFoundException;
 import co.cenitiumdev.projectmanagementapi.models.Project;
 import co.cenitiumdev.projectmanagementapi.models.User;
 import co.cenitiumdev.projectmanagementapi.services.repositories.ProjectRepository;
@@ -25,7 +26,7 @@ public class ProjectService {
     @Transactional
     public Project createProject(Project project, String ownerUsername) {
         User owner = userRepository.findByUsername(ownerUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
         project.setOwner(owner);
         return projectRepository.save(project);
     }
@@ -33,21 +34,21 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<Project> getProjectsByOwner(String ownerUsername) {
         User owner = userRepository.findByUsername(ownerUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
         return projectRepository.findByOwner(owner);
     }
 
     @Transactional(readOnly = true)
     public Optional<Project> getProjectByIdAndOwner(Long projectId, String ownerUsername) {
         User owner = userRepository.findByUsername(ownerUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
         return projectRepository.findByIdAndOwner(projectId, owner);
     }
 
     @Transactional
     public Project updateProject(Long projectId, Project updatedProject, String ownerUsername) {
         User owner = userRepository.findByUsername(ownerUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
 
         return projectRepository.findByIdAndOwner(projectId, owner)
                 .map(existingProject -> {
@@ -57,18 +58,18 @@ public class ProjectService {
                     existingProject.setEndDate(updatedProject.getEndDate());
                     return projectRepository.save(existingProject);
                 })
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado o no autorizado para el usuario: " + projectId));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario con ID: " + projectId));
     }
 
     @Transactional
     public void deleteProject(Long projectId, String ownerUsername) {
         User owner = userRepository.findByUsername(ownerUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario del proyecto no encontrado: " + ownerUsername));
 
         projectRepository.findByIdAndOwner(projectId, owner)
                 .ifPresentOrElse(
                         projectRepository::delete,
-                        () -> { throw new RuntimeException("Proyecto no encontrado o no autorizado para el usuario: " + projectId); }
+                        () -> { throw new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario con ID: " + projectId); }
                 );
     }
 }

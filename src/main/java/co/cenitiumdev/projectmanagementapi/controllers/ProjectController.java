@@ -1,5 +1,6 @@
 package co.cenitiumdev.projectmanagementapi.controllers;
 
+import co.cenitiumdev.projectmanagementapi.DTOs.ProjectDTO;
 import co.cenitiumdev.projectmanagementapi.models.Project;
 import co.cenitiumdev.projectmanagementapi.services.ProjectService;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -21,48 +23,65 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    private ProjectDTO convertToDto(Project project) {
+        ProjectDTO dto = new ProjectDTO();
+        dto.setId(project.getId());
+        dto.setName(project.getName());
+        dto.setDescription(project.getDescription());
+        dto.setStartDate(project.getStartDate());
+        dto.setEndDate(project.getEndDate());
+        return dto;
+    }
+
+    private Project convertToEntity(ProjectDTO projectDTO) {
+        Project project = new Project();
+        project.setName(projectDTO.getName());
+        project.setDescription(projectDTO.getDescription());
+        project.setStartDate(projectDTO.getStartDate());
+        project.setEndDate(projectDTO.getEndDate());
+        return project;
+    }
+
     @PostMapping
-    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project,
-                                                 @AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectDTO projectDTO,
+                                                    @AuthenticationPrincipal UserDetails currentUser) {
+        Project project = convertToEntity(projectDTO);
         Project createdProject = projectService.createProject(project, currentUser.getUsername());
-        return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
+        return new ResponseEntity<>(convertToDto(createdProject), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Project>> getMyProjects(@AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<List<ProjectDTO>> getMyProjects(@AuthenticationPrincipal UserDetails currentUser) {
         List<Project> projects = projectService.getProjectsByOwner(currentUser.getUsername());
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        List<ProjectDTO> projectDTOs = projects.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id,
-                                                  @AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id,
+                                                     @AuthenticationPrincipal UserDetails currentUser) {
         return projectService.getProjectByIdAndOwner(id, currentUser.getUsername())
-                .map(project -> new ResponseEntity<>(project, HttpStatus.OK))
+                .map(this::convertToDto)
+                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id,
-                                                 @Valid @RequestBody Project project,
-                                                 @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            Project updated = projectService.updateProject(id, project, currentUser.getUsername());
-            return new ResponseEntity<>(updated, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id,
+                                                    @Valid @RequestBody ProjectDTO projectDTO,
+                                                    @AuthenticationPrincipal UserDetails currentUser) {
+        Project projectToUpdate = convertToEntity(projectDTO);
+        Project updated = projectService.updateProject(id, projectToUpdate, currentUser.getUsername());
+        return new ResponseEntity<>(convertToDto(updated), HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id,
                                               @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            projectService.deleteProject(id, currentUser.getUsername());
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        projectService.deleteProject(id, currentUser.getUsername());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

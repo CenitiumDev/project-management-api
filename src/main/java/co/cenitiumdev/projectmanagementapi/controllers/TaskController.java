@@ -1,5 +1,6 @@
 package co.cenitiumdev.projectmanagementapi.controllers;
 
+import co.cenitiumdev.projectmanagementapi.DTOs.TaskDTO;
 import co.cenitiumdev.projectmanagementapi.models.Task;
 import co.cenitiumdev.projectmanagementapi.services.TaskService;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/tasks")
@@ -21,60 +23,69 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    private TaskDTO convertToDto(Task task) {
+        TaskDTO dto = new TaskDTO();
+        dto.setId(task.getId());
+        dto.setName(task.getName());
+        dto.setDescription(task.getDescription());
+        dto.setDueDate(task.getDueDate());
+        dto.setStatus(task.getStatus());
+        return dto;
+    }
+
+    private Task convertToEntity(TaskDTO taskDTO) {
+        Task task = new Task();
+        task.setName(taskDTO.getName());
+        task.setDescription(taskDTO.getDescription());
+        task.setDueDate(taskDTO.getDueDate());
+        task.setStatus(taskDTO.getStatus());
+        return task;
+    }
+
     @PostMapping
-    public ResponseEntity<Task> createTask(@PathVariable Long projectId,
-                                           @Valid @RequestBody Task task,
-                                           @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            Task createdTask = taskService.createTask(projectId, task, currentUser.getUsername());
-            return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<TaskDTO> createTask(@PathVariable Long projectId,
+                                              @Valid @RequestBody TaskDTO taskDTO,
+                                              @AuthenticationPrincipal UserDetails currentUser) {
+        Task task = convertToEntity(taskDTO);
+        Task createdTask = taskService.createTask(projectId, task, currentUser.getUsername());
+        return new ResponseEntity<>(convertToDto(createdTask), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasksByProject(@PathVariable Long projectId,
-                                                        @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            List<Task> tasks = taskService.getTasksByProjectAndOwner(projectId, currentUser.getUsername());
-            return new ResponseEntity<>(tasks, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<List<TaskDTO>> getTasksByProject(@PathVariable Long projectId,
+                                                           @AuthenticationPrincipal UserDetails currentUser) {
+        List<Task> tasks = taskService.getTasksByProjectAndOwner(projectId, currentUser.getUsername());
+        List<TaskDTO> taskDTOs = tasks.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(taskDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long projectId,
-                                            @PathVariable Long taskId,
-                                            @AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long projectId,
+                                               @PathVariable Long taskId,
+                                               @AuthenticationPrincipal UserDetails currentUser) {
         return taskService.getTaskByIdAndProjectAndOwner(taskId, projectId, currentUser.getUsername())
-                .map(task -> new ResponseEntity<>(task, HttpStatus.OK))
+                .map(this::convertToDto)
+                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long projectId,
-                                           @PathVariable Long taskId,
-                                           @Valid @RequestBody Task task,
-                                           @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            Task updated = taskService.updateTask(taskId, projectId, task, currentUser.getUsername());
-            return new ResponseEntity<>(updated, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long projectId,
+                                              @PathVariable Long taskId,
+                                              @Valid @RequestBody TaskDTO taskDTO,
+                                              @AuthenticationPrincipal UserDetails currentUser) {
+        Task taskToUpdate = convertToEntity(taskDTO);
+        Task updated = taskService.updateTask(taskId, projectId, taskToUpdate, currentUser.getUsername());
+        return new ResponseEntity<>(convertToDto(updated), HttpStatus.OK);
     }
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long projectId,
                                            @PathVariable Long taskId,
                                            @AuthenticationPrincipal UserDetails currentUser) {
-        try {
-            taskService.deleteTask(taskId, projectId, currentUser.getUsername());
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        taskService.deleteTask(taskId, projectId, currentUser.getUsername());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

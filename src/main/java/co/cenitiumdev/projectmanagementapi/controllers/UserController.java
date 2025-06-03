@@ -1,7 +1,7 @@
 package co.cenitiumdev.projectmanagementapi.controllers;
 
-import co.cenitiumdev.projectmanagementapi.dtos.LoginRequestDTO;
-import co.cenitiumdev.projectmanagementapi.dtos.UserRegistrationDTO;
+import co.cenitiumdev.projectmanagementapi.DTOs.LoginRequestDTO;
+import co.cenitiumdev.projectmanagementapi.DTOs.UserRegistrationDTO;
 import co.cenitiumdev.projectmanagementapi.models.User;
 import co.cenitiumdev.projectmanagementapi.services.CustomUserDetailsService;
 import co.cenitiumdev.projectmanagementapi.services.UserService;
@@ -32,37 +32,26 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
-        try {
-            userService.registerNewUser(registrationDTO);
-            return new ResponseEntity<>("Usuario registrado exitosamente", HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        userService.registerNewUser(registrationDTO);
+        return new ResponseEntity<>("Usuario registrado exitosamente", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
 
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            final String jwt = jwtUtil.generateToken(userDetails);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        final String jwt = jwtUtil.generateToken(userDetails);
 
-            return new ResponseEntity<>(jwt, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Credenciales inválidas: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
+        return new ResponseEntity<>(jwt, HttpStatus.OK);
     }
+
 
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long userId) {
-        try {
-            User user = userService.getUserProfile(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        User user = userService.getUserProfile(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
