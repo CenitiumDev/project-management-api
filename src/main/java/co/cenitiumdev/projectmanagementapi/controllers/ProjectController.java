@@ -1,6 +1,7 @@
 package co.cenitiumdev.projectmanagementapi.controllers;
 
 import co.cenitiumdev.projectmanagementapi.DTOs.ProjectDTO;
+import co.cenitiumdev.projectmanagementapi.exceptions.ResourceNotFoundException;
 import co.cenitiumdev.projectmanagementapi.models.Project;
 import co.cenitiumdev.projectmanagementapi.services.ProjectService;
 import jakarta.validation.Valid;
@@ -62,10 +63,10 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id,
                                                      @AuthenticationPrincipal UserDetails currentUser) {
-        return projectService.getProjectByIdAndOwner(id, currentUser.getUsername())
-                .map(this::convertToDto)
-                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Project project = projectService.getProjectByIdAndOwner(id, currentUser.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado o no autorizado para el usuario con ID: " + id));
+
+        return new ResponseEntity<>(convertToDto(project), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
