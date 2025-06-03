@@ -33,13 +33,10 @@ Este proyecto es una API RESTful robusta y segura diseñada para la gestión efi
 2. **Manejo Consistente de Errores**
    - `ErrorResponse`, `GlobalExceptionHandler`
 
-3. **Errores JWT (401 vs 403)**
-   - `JwtAuthenticationEntryPoint`, manejo en `JwtRequestFilter`
-
-4. **Desacoplamiento con DTOs**
+3. **Desacoplamiento con DTOs**
    - DTOs validados, mapeo manual
 
-5. **Seguridad a Nivel de Recurso**
+4. **Seguridad a Nivel de Recurso**
    - Relaciones JPA, métodos de repositorio filtrando por usuario
 
 ## Tecnologías Utilizadas
@@ -63,7 +60,7 @@ Este proyecto es una API RESTful robusta y segura diseñada para la gestión efi
 
 ### Instalación
 ```bash
-git clone https://github.com/tu-usuario/nombre-del-repositorio.git
+git clone https://github.com/cenitiumdev/project-management-api
 cd nombre-del-repositorio
 ./gradlew clean build
 ```
@@ -75,17 +72,19 @@ cd nombre-del-repositorio
 spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
 spring.datasource.url=jdbc:h2:mem:projectdb
+spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
-spring.datasource.password=password
-spring.jpa.hibernate.ddl-auto=update
+spring.datasource.password=
+
+# JPA/Hibernate
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
 
 # JWT
 jwt.secret=clave_segura_aqui
 jwt.expiration=3600000
-
-# Logs (opcional)
-logging.level.org.springframework.security=DEBUG
 ```
 
 ### Ejecutar la Aplicación
