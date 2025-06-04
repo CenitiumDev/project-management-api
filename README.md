@@ -75,7 +75,7 @@ Esta es una API RESTful robusta y segura, diseñada para la gestión eficiente d
 
 ### 📦 Instalación
 ```bash
-git clone https://github.com/cenitiumdev/project-management-api
+git clone https://github.com/CenitiumDev/project-management-api
 cd nombre-del-repositorio
 ./gradlew clean build
 ```
